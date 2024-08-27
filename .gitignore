@@ -1,0 +1,11 @@
+/.idea
+/.vs
+/obj
+/*.user
+/*.DotSettings
+/bin/Libs
+/bin/runtimes
+/bin/*.json
+/bin/*.exe
+/bin/*.dll
+/bin/*.pdb
