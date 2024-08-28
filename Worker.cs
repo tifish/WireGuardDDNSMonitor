@@ -11,12 +11,21 @@ public class Worker : BackgroundService
     private readonly List<string> _ips;
     private readonly string _serviceName = "";
     private const string ServiceNamePrefix = "WireGuardTunnel$";
+    private const string DomainsFileName = "Domains.txt";
 
     public Worker(ILogger<Worker> logger)
     {
         _logger = logger;
 
-        _domains = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "Domains.txt")).ToList();
+        if (!File.Exists(DomainsFileName))
+        {
+            _logger.LogError("{DomainsFile} file not found", DomainsFileName);
+            _domains = [];
+            _ips = [];
+            return;
+        }
+
+        _domains = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, DomainsFileName)).ToList();
         _ips = Enumerable.Repeat("", _domains.Count).ToList();
 
         // get all services
@@ -32,6 +41,8 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (_domains.Count == 0)
+            return;
         if (string.IsNullOrEmpty(_serviceName))
             return;
 
