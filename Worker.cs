@@ -9,6 +9,8 @@ public class Worker : BackgroundService
 
     private readonly List<string> _domains;
     private readonly List<string> _ips;
+    private readonly string _serviceName = "";
+    private const string ServiceNamePrefix = "WireGuardTunnel$";
 
     public Worker(ILogger<Worker> logger)
     {
@@ -16,10 +18,23 @@ public class Worker : BackgroundService
 
         _domains = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "Domains.txt")).ToList();
         _ips = Enumerable.Repeat("", _domains.Count).ToList();
+
+        // get all services
+        var service = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName.StartsWith(ServiceNamePrefix));
+        if (service == null)
+        {
+            _logger.LogError("No WireGuard service found");
+            return;
+        }
+
+        _serviceName = service.ServiceName;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (string.IsNullOrEmpty(_serviceName))
+            return;
+
         while (!stoppingToken.IsCancellationRequested)
         {
             var ipChanged = false;
@@ -64,7 +79,7 @@ public class Worker : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError("An error occurred: {message}", ex.Message);
+            _logger.LogError("An error occurred when restarting service: {message}", ex.Message);
         }
     }
 }
