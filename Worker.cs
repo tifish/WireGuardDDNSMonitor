@@ -68,22 +68,22 @@ public class Worker : BackgroundService
             }
 
             if (ipChanged)
-                RestartService("WireGuardTunnel$WireGuard");
+                RestartServiceIfRunning("WireGuardTunnel$WireGuard");
 
             await Task.Delay(10 * 1000, stoppingToken);
         }
     }
 
-    private void RestartService(string serviceName)
+    private void RestartServiceIfRunning(string serviceName)
     {
         try
         {
             using var service = new ServiceController(serviceName);
-            if (service.Status == ServiceControllerStatus.Running)
-            {
-                service.Stop();
-                service.WaitForStatus(ServiceControllerStatus.Stopped);
-            }
+            if (service.Status != ServiceControllerStatus.Running)
+                return;
+
+            service.Stop();
+            service.WaitForStatus(ServiceControllerStatus.Stopped);
 
             service.Start();
             service.WaitForStatus(ServiceControllerStatus.Running);
