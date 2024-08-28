@@ -30,8 +30,9 @@ jobs:
 
     - name: Pack files
       run: |
+        dir "C:\Program Files\7-Zip"
         cd bin
-        & "C:\Program Files\7-Zip\7za.exe" a -r ..\WireGuardDDNSMonitor.7z *
+        & "C:\Program Files\7-Zip\7z.exe" a -r ..\WireGuardDDNSMonitor.7z *
         cd ..
 
     - name: Delete release and tag
