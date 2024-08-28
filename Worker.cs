@@ -17,7 +17,8 @@ public class Worker : BackgroundService
     {
         _logger = logger;
 
-        if (!File.Exists(DomainsFileName))
+        var domainsFilePath = Path.Join(AppContext.BaseDirectory, DomainsFileName);
+        if (!File.Exists(domainsFilePath))
         {
             _logger.LogError("{DomainsFile} file not found", DomainsFileName);
             _domains = [];
@@ -25,7 +26,7 @@ public class Worker : BackgroundService
             return;
         }
 
-        _domains = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, DomainsFileName)).ToList();
+        _domains = File.ReadAllLines(domainsFilePath).ToList();
         _ips = Enumerable.Repeat("", _domains.Count).ToList();
 
         // get all services
@@ -61,9 +62,7 @@ public class Worker : BackgroundService
                     continue;
 
                 ipChanged = true;
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("[{time}]{domain} IP changed from {oldIP} to {newIP}",
-                        DateTimeOffset.Now, _domains[i], _ips[i], ip);
+                _logger.LogInformation("{Domain} IP changed from {OldIP} to {NewIP}", _domains[i], _ips[i], ip);
                 _ips[i] = ip;
             }
 
@@ -90,7 +89,7 @@ public class Worker : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError("An error occurred when restarting service: {message}", ex.Message);
+            _logger.LogError("An error occurred when restarting service: {Message}", ex.Message);
         }
     }
 }
