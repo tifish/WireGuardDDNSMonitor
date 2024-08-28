@@ -62,7 +62,8 @@ public class Worker : BackgroundService
                     continue;
 
                 ipChanged = true;
-                _logger.LogInformation("{Domain} IP changed from {OldIP} to {NewIP}", _domains[i], _ips[i], ip);
+                if (!string.IsNullOrEmpty(_ips[i]))
+                    _logger.LogInformation("{Domain} IP changed from {OldIP} to {NewIP}", _domains[i], _ips[i], ip);
                 _ips[i] = ip;
             }
 
