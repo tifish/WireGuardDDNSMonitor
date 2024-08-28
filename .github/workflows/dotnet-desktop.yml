@@ -31,7 +31,7 @@ jobs:
     - name: Pack files
       run: |
         cd bin
-        7Zip\7za.exe a -r ..\WireGuardDDNSMonitor.7z *
+        C:\Program Files\7-Zip\7za.exe a -r ..\WireGuardDDNSMonitor.7z *s
         cd ..
 
     - name: Delete release and tag
