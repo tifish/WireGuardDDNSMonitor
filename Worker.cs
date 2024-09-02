@@ -26,7 +26,10 @@ public class Worker : BackgroundService
             return;
         }
 
-        _domains = File.ReadAllLines(domainsFilePath).ToList();
+        _domains = File.ReadAllLines(domainsFilePath)
+            .Where(domain => !string.IsNullOrWhiteSpace(domain))
+            .Select(domain => domain.Trim())
+            .ToList();
         _ips = Enumerable.Repeat("", _domains.Count).ToList();
 
         // get all services
@@ -49,26 +52,43 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            var ipChanged = false;
-
-            for (var i = 0; i < _domains.Count; i++)
+            try
             {
-                var addresses = await Dns.GetHostAddressesAsync(_domains[i], stoppingToken);
-                var ip = addresses.FirstOrDefault()?.ToString();
-                if (ip == null)
-                    continue;
+                var ipChanged = false;
 
-                if (ip == _ips[i])
-                    continue;
+                for (var i = 0; i < _domains.Count; i++)
+                {
+                    IPAddress[] addresses;
+                    try
+                    {
+                        addresses = await Dns.GetHostAddressesAsync(_domains[i], stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "An error occurred when getting IP address for {Domain}", _domains[i]);
+                        continue;
+                    }
 
-                ipChanged = true;
-                if (!string.IsNullOrEmpty(_ips[i]))
-                    _logger.LogInformation("{Domain} IP changed from {OldIP} to {NewIP}", _domains[i], _ips[i], ip);
-                _ips[i] = ip;
+                    var ip = addresses.FirstOrDefault()?.ToString();
+                    if (ip == null)
+                        continue;
+
+                    if (ip == _ips[i])
+                        continue;
+
+                    ipChanged = true;
+                    if (!string.IsNullOrEmpty(_ips[i]))
+                        _logger.LogInformation("{Domain} IP changed from {OldIP} to {NewIP}", _domains[i], _ips[i], ip);
+                    _ips[i] = ip;
+                }
+
+                if (ipChanged)
+                    RestartServiceIfRunning("WireGuardTunnel$WireGuard");
             }
-
-            if (ipChanged)
-                RestartServiceIfRunning("WireGuardTunnel$WireGuard");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred");
+            }
 
             await Task.Delay(10 * 1000, stoppingToken);
         }
