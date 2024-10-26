@@ -46,9 +46,21 @@
         <!-- <BeautyGitCDN>https://gitee.com/liesauer/HostFXRPatcher</BeautyGitCDN> -->
         <!-- <BeautyGitTree>master</BeautyGitTree> -->
     </PropertyGroup>
+
+    <ItemGroup>
+      <COMReference Include="NETWORKLIST">
+        <WrapperTool>tlbimp</WrapperTool>
+        <VersionMinor>0</VersionMinor>
+        <VersionMajor>1</VersionMajor>
+        <Guid>dcb00d01-570f-4a9b-8d69-199fdba5723b</Guid>
+        <Lcid>0</Lcid>
+        <Isolated>false</Isolated>
+        <EmbedInteropTypes>true</EmbedInteropTypes>
+      </COMReference>
+    </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
         <PackageReference Include="nulastudio.NetBeauty" Version="2.1.4.5" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />

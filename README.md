@@ -1,5 +1,7 @@
 # WireGuard DDNS Monitor
-Monitor domain IP change and restart WireGuard service automatically.
+
+- Monitor domain IP change and restart WireGuard service automatically.
+- Set WireGuard network category to private automatically.
 
 ## Usage
 
