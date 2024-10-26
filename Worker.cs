@@ -141,7 +141,10 @@ public class Worker : BackgroundService
                 continue;
 
             if (network.GetCategory() != NLM_NETWORK_CATEGORY.NLM_NETWORK_CATEGORY_PRIVATE)
+            {
+                _logger.LogInformation("Changing network category to private for {AdapterName}", _adapterName);
                 network.SetCategory(NLM_NETWORK_CATEGORY.NLM_NETWORK_CATEGORY_PRIVATE);
+            }
             break;
         }
     }

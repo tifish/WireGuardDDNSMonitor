@@ -9,3 +9,5 @@
 /bin/*.exe
 /bin/*.dll
 /bin/*.pdb
+/FastCopy.*
+/UpdateLibrary.cmd
