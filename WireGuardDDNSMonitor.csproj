@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-WireGuardDDNSMonitor-40ED9C99-4A9A-4EF1-B73C-54F7DD8CF3C7</UserSecretsId>
         <OutDir>bin</OutDir>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     </PropertyGroup>
 
     <PropertyGroup>
